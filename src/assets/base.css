@@ -112,6 +112,10 @@ body {
   color: #666;
 }
 
+.todo-title-done {
+  text-decoration: line-through;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .todo-grid {

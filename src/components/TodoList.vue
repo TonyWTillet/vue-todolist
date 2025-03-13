@@ -6,16 +6,20 @@
     <form class="todo-form" @submit.prevent="addTodo">
       <input type="text" v-model="newTodo.title" placeholder="Title">
       <input type="text" v-model="newTodo.description" placeholder="Description">
-      <button class="btn btn-primary">Add Todo</button>
+      <button :disabled="newTodo.title === ''" class="btn btn-primary">Add Todo</button>
     </form>
 
     <div class="todo-grid">
       <p v-if="todos.length === 0">No todos yet</p>
-      <div v-else class="todo-card" v-for="todo in todos" :key="todo.id">
+      <div v-else class="todo-card" v-for="todo in sortedTodos()" :key="todo.id">
         <div class="todo-card-content" :class="todo.color">
-          <span :class="todo.isDone ? 'todo-card-status-done' : 'todo-card-status-pending'" class="todo-card-status">{{ todo.isDone ? 'Done' : 'Pending' }}</span>
+          
+          <div>
+            <input type="checkbox" v-model="todo.isDone">
+            <span :class="todo.isDone ? 'todo-card-status-done' : 'todo-card-status-pending'" class="todo-card-status" style="margin-left: 10px;">{{ todo.isDone ? 'Done' : 'Pending' }}</span>
+          </div>
           <div class="todo-card-header"> 
-            <h3 class="todo-title">{{ todo.title }}</h3>
+            <h3 :class="todo.isDone ? 'todo-title-done' : 'todo-title'" class="todo-title">{{ todo.title }}</h3>
             <p class="todo-date">{{ todo.date }}</p>
           </div>
           <div class="todo-card-body">
@@ -26,6 +30,13 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <div>
+      <label>
+        <input type="checkbox" v-model="hideDone">
+        Hide done todos
+      </label>
     </div>
   </div>
 
@@ -77,5 +88,19 @@ const markAsDone = (id) => {
       successMessage.remove();
     }, 300);
   }, 3000);
+}
+
+const hideDone = ref(false);
+
+const sortedTodos = () => {
+  const sortedTodos = todos.value.toSorted((a, b) => 
+     a.isDone > b.isDone ? 1 : -1
+  );
+
+  if (hideDone.value === true) {
+    return sortedTodos.filter(todo => !todo.isDone);
+  }
+
+  return sortedTodos;
 }
 </script>
